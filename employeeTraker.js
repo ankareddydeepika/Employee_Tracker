@@ -57,6 +57,10 @@ var connection = mysql.createConnection({
             addNewrole()
             break;
 
+          case "Update employee role":
+              updateRole()
+              break;
+
         }
       })
   }
@@ -182,6 +186,47 @@ var connection = mysql.createConnection({
       runSearch();
     })
   })
+  }
+
+  async function updateRole(){
+    var employeeQuery = allEmployes();
+    var employee = await connection.query(employeeQuery);
+    var rolesQuery = allroles()
+   var roles = await connection.query(rolesQuery)
+  
+    const employeeChoices = employee.map(({ id, first_name, last_name }) => ({
+      name: `${first_name} ${last_name}`,
+      value: id
+    }));
+
+    const roleChoices = roles.map(({ id, title }) => ({
+      name: title,
+      value: id
+    }));
+
+    inquirer.prompt([{
+      name:"employee",
+      type: "list",
+      message:"Which employee role do you wnat to change",
+      choices: employeeChoices
+    },
+    {
+      name:"role",
+      type: "list",
+      message:"Which role do you want to assign to the selected employee",
+      choices: roleChoices
+    }
+  ])
+  .then(function(answer){
+    console.log(answer)
+    var query = "UPDATE employee SET role_id = ? WHERE id = ?;"
+    connection.query(query, [answer.role, answer.employee], function(err, res){
+      if(err) throw err;
+      console.log("The employee role is changed")
+      runSearch();
+    })
+  })
+
   }
 
   function allroles() {
