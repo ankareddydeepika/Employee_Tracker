@@ -27,7 +27,7 @@ var connection = mysql.createConnection({
           "View departments",
           "Add new employee",
           "Add new department",
-          "Update roles",
+          "Add new role",
           "Update employee role"
         ]
       })
@@ -51,6 +51,10 @@ var connection = mysql.createConnection({
           
           case "Add new department":
             addNewdepartment()
+            break;
+
+          case "Add new role":
+            addNewrole()
             break;
 
         }
@@ -126,7 +130,7 @@ var connection = mysql.createConnection({
   })
   }
 
-  async function addNewdepartment(){
+  function addNewdepartment(){
     inquirer.prompt({
       name:"new_department",
       type: "input",
@@ -141,6 +145,43 @@ var connection = mysql.createConnection({
       })
     })
 
+  }
+
+  async function addNewrole(){
+    var departmentsQuery = allDepartments();
+    var department = await connection.query(departmentsQuery)
+    
+    const departmentChoices = department.map(({ id, name }) => ({
+      name: name,
+      value: id
+    }));
+
+    inquirer.prompt([{
+      name:"role",
+      type: "input",
+      message: "What is name of the role?"
+    },
+    {
+      name:"salary",
+      type: "input",
+      message: "What is the salary for this role?"
+    },
+    {
+      name:"departmentID",
+      type: "list",
+      message:"Which department does this role belong?",
+      choices: departmentChoices
+    }
+  
+  ])
+  .then(function(answer){
+    var query = "INSERT INTO role(title, salary, department_id) values( ? , ?, ?);"
+    connection.query(query, [answer.role, answer.salary, answer.departmentID], function(err, res){
+      if(err) throw err;
+      console.log("New role is added");
+      runSearch();
+    })
+  })
   }
 
   function allroles() {
