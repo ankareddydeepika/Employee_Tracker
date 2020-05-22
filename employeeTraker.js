@@ -50,8 +50,8 @@ var connection = mysql.createConnection({
             break;
           
           case "Add new department":
-
-          break;
+            addNewdepartment()
+            break;
 
         }
       })
@@ -92,7 +92,7 @@ var connection = mysql.createConnection({
     name: `${first_name} ${last_name}`,
     value: id
   }));
-    await inquirer.prompt([{
+    inquirer.prompt([{
       name:"firstname",
       type: "input",
       message: "What is employee's First name?"
@@ -127,6 +127,19 @@ var connection = mysql.createConnection({
   }
 
   async function addNewdepartment(){
+    inquirer.prompt({
+      name:"new_department",
+      type: "input",
+      message: "Which department do you want to add?"
+    })
+    .then(function(answer){
+      var query = "INSERT INTO department(name) VALUES (?);"
+      connection.query(query, [answer.new_department], function(err, res){
+        if(err) throw err;
+        console.log("Added new Deparment")
+        runSearch();
+      })
+    })
 
   }
 
