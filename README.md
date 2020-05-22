@@ -23,5 +23,5 @@ so that user can organize and plan business
 
 
   
-![employeetracker](./Assets/Employee_Tracker)
+![employeetracker](./Assets/Employee_Tracker.gif)
 
